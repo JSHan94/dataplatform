@@ -2,7 +2,7 @@
 module.exports={
     host: 'localhost',
     user: 'root',
-    password: 'dataplatform',
+    password: 'pass',
     port: 3306,
-    database: 'dataplatform'
+    database: 'keeper'
 };

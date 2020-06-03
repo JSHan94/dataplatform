@@ -1,15 +1,117 @@
 <template>
   <v-col justify="center">
-   
+    <v-row>
+      <v-col md="1">
+        <div class="my-1">
+          <v-btn large block @click="getToken">
+            getToken
+          </v-btn>
+        </div>
+      </v-col>
+      <v-col md="2">
+        <v-text-field label="user" outlined v-model="user"></v-text-field>
+      </v-col>
+      <v-col md="2">
+        <v-text-field label="amount" outlined v-model="amount"></v-text-field>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col md="1">
+        <div class="my-1">
+          <v-btn large block @click="upload">
+            upload
+          </v-btn>
+        </div>
+      </v-col>
+      <v-col md="2">
+        <v-text-field label="fileName" outlined v-model="fileName"></v-text-field>
+      </v-col>
+      <v-col md="2">
+        <v-text-field label="category" outlined v-model="category"></v-text-field>
+      </v-col>
+      <v-col md="2">
+        <v-text-field label="price" outlined v-model="price"></v-text-field>
+      </v-col>
+      <v-col md="2">
+        <v-text-field label="datah" outlined v-model="datah"></v-text-field>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col md="1">
+        <div class="my-1">
+          <v-btn large block @click="buy">
+            buy
+          </v-btn>
+        </div>
+      </v-col>
+      <v-col md="2">
+        <v-text-field label="buyDatah" outlined v-model="buyDatah"></v-text-field>
+      </v-col>
+    </v-row>
+    
   </v-col>
 </template>
 
 <script>
-
+import axios from 'axios'
+import Web3 from 'web3';
 export default {
-  data() {
-    return {  
-    }
+  data: () => ({
+    user: '',
+    amount: '',
+    fileName: '',
+    category: '',
+    price: '',
+    datah: '',
+    buyDatah: '',
+  }),
+  methods:{
+    gettoken(){
+      axios.get('http://141.223.82.142:3000/send', {
+        params: {
+          method: 'getToken',
+          user: this.user,
+          token: this.token
+        }
+      })
+        .then(res => {
+          console.log('register-response: ', res)
+        })
+        .catch(err => {
+          console.log('error')
+        })
+    },
+    upload(){
+      axios.get('http://141.223.82.142:3000/send', {
+        params: {
+          method: 'uploadFile',
+          category: this.category,
+          fileName: this.fileName,
+          dataHash: this.datah,
+          price: this.price
+        }
+      })
+        .then(res => {
+          console.log('register-response: ', res)
+        })
+        .catch(err => {
+          console.log('error')
+        })
+    },
+    buy(){
+      axios.get('http://141.223.82.142:3000/send', {
+        params: {
+          method: 'buyFile',
+          dataHash: this.buyDatah,
+        }
+      })
+        .then(res => {
+          console.log('register-response: ', res)
+        })
+        .catch(err => {
+          console.log('error')
+        })
+    },
   }
 }
 </script>
