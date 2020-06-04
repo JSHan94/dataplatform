@@ -48,7 +48,6 @@
         <v-text-field label="buyDatah" outlined v-model="buyDatah"></v-text-field>
       </v-col>
     </v-row>
-    
   </v-col>
 </template>
 
@@ -57,8 +56,8 @@ import axios from 'axios'
 import Web3 from 'web3';
 export default {
   data: () => ({
-    user: '',
-    amount: '',
+    user: '0x78658C9AaD8523BB283029C43135CF87339ADC21',
+    amount: '20',
     fileName: '',
     category: '',
     price: '',
@@ -66,20 +65,22 @@ export default {
     buyDatah: '',
   }),
   methods:{
-    gettoken(){
+    getToken(){
       axios.get('http://141.223.82.142:3000/send', {
         params: {
           method: 'getToken',
           user: this.user,
-          token: this.token
+          token: this.amount
         }
       })
+      /*
         .then(res => {
           console.log('register-response: ', res)
         })
         .catch(err => {
           console.log('error')
         })
+      */
     },
     upload(){
       axios.get('http://141.223.82.142:3000/send', {
@@ -91,12 +92,14 @@ export default {
           price: this.price
         }
       })
+      /*
         .then(res => {
           console.log('register-response: ', res)
         })
         .catch(err => {
           console.log('error')
         })
+      */
     },
     buy(){
       axios.get('http://141.223.82.142:3000/send', {
@@ -105,12 +108,14 @@ export default {
           dataHash: this.buyDatah,
         }
       })
+      /*
         .then(res => {
           console.log('register-response: ', res)
         })
         .catch(err => {
           console.log('error')
         })
+      */
     },
   }
 }

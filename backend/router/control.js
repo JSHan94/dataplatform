@@ -3,7 +3,6 @@ var dbConfig = require('../config/database.js');
 var con = mysql.createConnection(dbConfig);
 
 exports.getDataInfo = (req,res) => {
-
   con.query('SELECT * from datainfo', function(err, rows) {
     if (err){
       throw err;
@@ -23,7 +22,6 @@ exports.postData = (req,res) => {
 };
 
 exports.postDataInfo = (req,res) => {
-
   let name = req.body.name, category = req.body.category, price = req.body.price;
   let time;
   var sql = "INSERT INTO datainfo (name, category, price, time) VALUES ?";
@@ -41,5 +39,3 @@ exports.postDataInfo = (req,res) => {
     })
   });
 };
-
-

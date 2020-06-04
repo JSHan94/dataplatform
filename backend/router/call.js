@@ -4,8 +4,8 @@ exports.sendTransaction = (req,res) =>{
         const uploader = "0x7161a4eCE5dD841756ee38cBEa7da055F29302c9"
         
         // url query examples 
-        // getFileInformation - dataHash
-        // http://localhost:3000/send?method=getFileInformation&dataHash=123
+        // getFileInformation
+        // http://localhost:3000/send?method=getFileInformation
   
         // buyFile - dataHash
         // http://localhost:3000/send?method=buyFile&dataHash=123
@@ -16,11 +16,14 @@ exports.sendTransaction = (req,res) =>{
         // uploadFile - category, fileName, dataHash, price
         // http://localhost:3000/send?method=uploadFile&category=science&fileName=network&dataHash=123&price=10
   
+        // saleConfirm - dataHash
+        // http://localhost:3000/send?method=saleConfirm - dataHash
+        
         // checkEvent - blocknum
-        // http://localhost:3000/send?method=checkEvent&blocknum=7909041
+        // http://localhost:3000/send?method=checkEvent
   
         // read url query 
-        var scriptName = "trading.py"
+        var scriptName = "../python_script/Trading.py"
         var query = [scriptName]
         for (var i in req.query){
             query.push(req.query[i])
