@@ -32,9 +32,6 @@
       <v-col md="2">
         <v-text-field label="price" outlined v-model="price"></v-text-field>
       </v-col>
-      <v-col md="2">
-        <v-text-field label="datah" outlined v-model="datah"></v-text-field>
-      </v-col>
     </v-row>
     <v-row>
       <v-col md="1">
@@ -46,6 +43,45 @@
       </v-col>
       <v-col md="2">
         <v-text-field label="buyDatah" outlined v-model="buyDatah"></v-text-field>
+      </v-col>
+    </v-row>
+    <!-- <v-row>
+      <v-col md="1">
+        <div class="my-1">
+          <v-btn large block @click="getInfo">
+            getInfo
+          </v-btn>
+        </div>
+      </v-col>
+    </v-row> -->
+    <v-row>
+      <v-col md="1">
+        <div class="my-1">
+          <v-btn large block @click="check">
+            check
+          </v-btn>
+        </div>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col md="1">
+        <div class="my-1">
+          <v-btn large block @click="confirm">
+            confirm
+          </v-btn>
+        </div>
+      </v-col>
+      <v-col md="2">
+        <v-text-field label="confirmDatah" outlined v-model="confirmDatah"></v-text-field>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col md="1">
+        <div class="my-1">
+          <v-btn large block @click="jupyter">
+            jupyter
+          </v-btn>
+        </div>
       </v-col>
     </v-row>
   </v-col>
@@ -63,6 +99,7 @@ export default {
     price: '',
     datah: '',
     buyDatah: '',
+    confirmDatah: '',
   }),
   methods:{
     getToken(){
@@ -88,7 +125,6 @@ export default {
           method: 'uploadFile',
           category: this.category,
           fileName: this.fileName,
-          dataHash: this.datah,
           price: this.price
         }
       })
@@ -117,6 +153,55 @@ export default {
         })
       */
     },
+    // getInfo(){
+    //   axios.get('http://141.223.82.142:3000/send', {
+    //     params: {
+    //       method: 'getFileInformation',
+    //     }
+    //   })
+    //   /*
+    //     .then(res => {
+    //       console.log('register-response: ', res)
+    //     })
+    //     .catch(err => {
+    //       console.log('error')
+    //     })
+    //   */
+    // },
+    check(){
+      axios.get('http://141.223.82.142:3000/send', {
+        params: {
+          method: 'checkEvent',
+        }
+      })
+      /*
+        .then(res => {
+          console.log('register-response: ', res)
+        })
+        .catch(err => {
+          console.log('error')
+        })
+      */
+    },
+    confirm(){
+      axios.get('http://141.223.82.142:3000/send', {
+        params: {
+          method: 'salesConfirm',
+          dataHash: this.confirmDatah,
+        }
+      })
+      /*
+        .then(res => {
+          console.log('register-response: ', res)
+        })
+        .catch(err => {
+          console.log('error')
+        })
+      */
+    },
+    jupyter(){
+      window.location.href = "http://141.223.82.142:8080"
+    }
   }
 }
 </script>

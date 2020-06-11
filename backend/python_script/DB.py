@@ -18,10 +18,9 @@ class DB:
             cursor.execute(sql)
             result = cursor.fetchall()
             return result
-        except pymysql.err.IntegrityError:
-            print("IntegrityError")
+        except Exception:
+            logger.exception("what?")
 
-    
     def db_close(self):
         self.db.close()
         return
@@ -30,6 +29,123 @@ class DB:
         self.db.commit()
         return
 
+    # Encrypt.py
+    def get_encrypt(self,datahash):
+        sql =(
+            """
+            select encrypt,capsule,cfrag,decrypt from db
+            where datahash = "%s"
+            """%(
+                datahash
+            )
+        )
+        try :
+            res = self.send_sql(sql)
+            return res
+        except Exception:
+            logger.exception("get_encrypt")
+
+    def update_encrypt(self,encrypt,capsule,cfrag,datahash):
+        sql = (
+            """
+            UPDATE db 
+            SET encrypt = "%s", capsule ="%s", cfrag = "%s" 
+            WHERE datahash = "%s"
+            """
+            %(
+                encrypt,
+                capsule,
+                cfrag,
+                datahash
+            )
+        )
+        try :
+            res = self.send_sql(sql)
+            return res
+        except Exception:
+            logger.exception("insert_encrypt")
+
+    def insert_keys(self, user, keys):
+        sql = (
+            """
+            INSERT INTO keyinfo (user,privatekey,publickey,signkey,verifykey) 
+            VALUES ("%s","%s","%s","%s","%s") 
+            """
+            %(
+                user,
+                keys[0],
+                keys[1],
+                keys[2],
+                keys[3]
+            )
+        )
+
+        try :
+            res = self.send_sql(sql)
+            return res
+        except Exception:
+            logger.exception("insert_keys")
+
+    def get_key(self, user, req_keys):
+        sql = (
+            """
+            select %s from keyinfo where user = "%s"
+            """%(
+                req_keys,
+                user
+            )
+        )
+        try :
+            res = self.send_sql(sql)
+            return res
+        except Exception:
+            logger.exception("get_key")
+
+    def get_decrypt(self,datahash):
+        sql  =(
+            """
+            select decrypt from db where datahash = "%s"
+            """%(
+                datahash
+            )
+        )
+        try :
+            res = self.send_sql(sql)
+            return res
+        except Exception:
+            logger.exception("get_decrypt")
+
+
+    # Trading.py
+    def get_dbhash(self):
+        sql = (
+            """
+            select * from db
+            """
+            # select * from db where datahash is Null limit 1
+        )
+        try :
+            print("get_dbhash called!")
+            res = self.send_sql(sql)
+            return res
+        except Exception as e :
+            logger.exception("get_dbhash")
+    
+    def update_dbhash(self,datahash):
+        sql = (
+            """
+            update db set datahash = "%s"
+            where datahash is Null limit 1
+            """%(
+                datahash
+            )
+        )
+        try :
+            res = self.send_sql(sql)
+            return res
+        except Exception as e :
+            logger.exception("update_dbhash")
+    
     def get_datainfo(self):
         sql = (
             """
@@ -43,36 +159,6 @@ class DB:
         except Exception as e :
             logger.exception("get_datainfo")
 
-    def update_hash(self,datahash,updated):
-        sql = (
-            """
-            update hashinfo
-            set updated = %s
-            where datahash = "%s"
-            """%(
-                str(updated),
-                datahash
-            )
-        )
-        try :
-            res = self.send_sql(sql)
-            return res
-        except Exception as e :
-            logger.exception("update_hash")
-
-    def get_hashinfo(self):
-        sql = (
-            """
-            select *
-            from hashinfo
-            where updated = 0
-            """
-        )
-        try :
-            res = self.send_sql(sql)
-            return res
-        except Exception as e :
-            logger.exception("get_hashinfo")
 
     def insert_balanceinfo(self, _user, _balance):
         sql =(
@@ -95,9 +181,9 @@ class DB:
         sql = (
             """
             INSERT INTO datainfo (price, timestamp, datahash, category,name,buyer,owner,state) 
-            VALUES(%s, %s, "%s", "%s", "%s", "%s", "%s", %s)
+            VALUES(%s, "%s", "%s", "%s", "%s", "%s", "%s", %s)
             ON DUPLICATE KEY UPDATE    
-            price = %s, timestamp =%s, category = "%s",name = "%s", buyer = "%s", owner = "%s", state = %s
+            price = %s, timestamp ="%s", category = "%s",name = "%s", buyer = "%s", owner = "%s", state = %s
             """
             %(
                 _price, _timestamp, _datahash, _category, _name, _buyer, _owner, _state,
@@ -109,18 +195,3 @@ class DB:
             res = self.send_sql(sql)
         except Exception:
             logger.exception("insert_datainfo")
-
-
-    def insert_datahash(self,datahash,updated):
-        sql = (
-            """
-            INSERT IGNORE INTO hashinfo(datahash,updated) VALUES("%s",%s)
-            """%(
-                datahash,updated
-            )
-        )
-
-        try :
-            res = self.send_sql(sql)
-        except Exception :
-            logger.exception("what")

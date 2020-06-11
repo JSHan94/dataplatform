@@ -51,13 +51,6 @@ class Contract:
         self.signTx(tx, self.uploaderPk)
         return
     
-    # get File Information
-    def getFileInformation(self,dataHash):
-        #print("currnet buyer nonce : ", self.w3.eth.getTransactionCount(self.buyer))  
-        tx = self.contract.functions.getData(dataHash).buildTransaction({'nonce': self.w3.eth.getTransactionCount(self.buyer), 'gas': 999999})
-        self.signTx(tx, self.buyerPk)
-        return
-
     # sign on Tx
     def signTx(self, tx, privateKey):
         
@@ -73,7 +66,7 @@ class Contract:
         for event in events :
             tx_hash = event['transactionHash']
             tx_receipt = self.w3.eth.getTransactionReceipt(tx_hash.hex())
-            for eventName in ["Upload","GetData","Buy","Balance"]:
+            for eventName in ["GetData","Balance"]: #["Upload","GetData","Buy","Balance"]:
                 res.append(self.logCall(eventName,tx_receipt))
 
         return res
@@ -81,18 +74,10 @@ class Contract:
 
     def logCall(self, eventName, tx_receipt):
         rich_logs = ()
-        if eventName == "Upload":
-            rich_logs = self.contract.events.Upload().processReceipt(tx_receipt,DISCARD)
-        elif eventName == "GetData":
+        if eventName == "GetData":
             rich_logs = self.contract.events.GetData().processReceipt(tx_receipt,DISCARD)
-        elif eventName == "Buy":
-            rich_logs = self.contract.events.Buy().processReceipt(tx_receipt,DISCARD)
         elif eventName == "Balance":
             rich_logs = self.contract.events.Balance().processReceipt(tx_receipt,DISCARD)
         
         if rich_logs != ():
             return rich_logs
-            
-            # for i in range(len(rich_logs)):
-            #     print(Web3.toJSON(rich_logs[i]))
-                

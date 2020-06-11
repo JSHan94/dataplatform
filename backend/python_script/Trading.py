@@ -7,13 +7,14 @@ import random, string
 import time
 import Info
 import DB
-
+import Encrypt
+from datetime import datetime
 def generate_hash():
     x = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(16))
     return x
 
 buyer = Info.buyer
-uploader = Info.buyer
+uploader = Info.uploader
 
 buyerKey = Info.buyerKey
 uploaderKey = Info.uploaderKey
@@ -23,9 +24,15 @@ if __name__ == "__main__":
 
     db = DB.DB()
     trading = Contract.Contract(buyer,uploader,buyerKey,uploaderKey)
+    curBlock = int(trading.getBlock()["number"])  
 
-    curBlock = int(trading.getBlock()["number"])    
-    try :     
+    # user = buyer
+    # encrypt.generate_key(user)
+    
+    # res = encrypt.get_key(user,["privatekey","publickey","signkey","verifykey"])[0]
+    # print(bytes.fromhex(res[0]))
+    
+    try :
         select = sys.argv[1]
 
         if select == "getToken":
@@ -40,43 +47,46 @@ if __name__ == "__main__":
             price = int(sys.argv[4])
             datahash = generate_hash()
             
+            
+            # data encryption with Encrypt.py
+            # actually.. it should be in buyFile method..
+            time_out = 100 
+            while time_out >0 :
+                res = db.get_dbhash()
+                if len(res) != 0:
+                    db.update_dbhash(datahash)
+                    break 
+                time.sleep(5)
+                time_out -= 5
+                db.db_commit()
+                print("checking db newdata ... time out : {}, res : {}".format(time_out,res))
+            
+            proxy = Encrypt.Encrypt(db)
+            proxy.encrypt(uploader,buyer,datahash)
+
+            # Smart Contract call
             trading.uploadFile(category,filename,datahash,price)
-            db.insert_datahash(datahash,0)
-            logger.debug({'event': "uploadFile", 'category':category, 'filename' : filename, 'datahash':datahash,'price':price})
-
-    
-        elif select == "getFileInformation":
-            datahash_list = db.get_hashinfo()
-            for datahash in datahash_list:
-                while True:
-                    try : 
-                        trading.getFileInformation(datahash[0])
-                        break
-                    except Exception :
-                        #logger.exception("what")
-                        print("pending transaction waiting.. {}".format(datahash[0]))
-                        time.sleep(30)
-                
-                db.update_hash(datahash[0],1)
-                logger.debug("datahash : {} getFileInformation called!".format(datahash[0]))
-            logger.debug({'event':"getFileInformation"})
             
-        elif select == "salesConfirm":
-            datahash = sys.argv[2]
-            trading.salesConfirm(datahash) 
-            
-            db.update_hash(datahash,0)
-            logger.debug({'event':"salesConfirm", 'category':category, 'filename' : filename, 'datahash':datahash,'price':price})
-
+            print({'event': "uploadFile", 'category':category, 'filename' : filename, 'datahash':datahash,'price':price})
+        
         elif select == "buyFile":
             datahash = sys.argv[2]
+
+            # buy file : state = 1
             trading.buyFile(datahash)
-   
-            db.update_hash(datahash,0)
-            logger.debug({'event':"buyFile", 'datahash':datahash, 'buyer':buyer})
+            print({'event':"buyFile", 'datahash':datahash, 'buyer':buyer})
+            
+            # decrypt test
+            proxy = Encrypt.Encrypt(db)
+            if proxy.decrypt(uploader, buyer, datahash):
+                # sales confirm : state = 2
+                trading.salesConfirm(datahash) 
+                print({'event':"salesConfirm", 'datahash':datahash})
+            else : 
+                print("decryption fail!! revert salesconfirm")
 
         elif select == "checkEvent":
-            blocknum = curBlock - 100 #int(sys.argv[2])
+            blocknum = curBlock - 100 
             logs = trading.checkEvent(blocknum)
             
             for i in range(len(logs)):
@@ -85,21 +95,24 @@ if __name__ == "__main__":
                         # datainfo update
                         log_args = logs[i][j]["args"]
                         if logs[i][j]["event"] == "GetData":
+                            logs_time = datetime.fromtimestamp(int(log_args["timestamp"])).strftime('%Y-%m-%d %H:%M:%S')
                             db.insert_datainfo(
-                                    log_args["price"],log_args["timestamp"],log_args["datah"],
+                                    log_args["price"],logs_time,log_args["datah"],
                                     log_args["category"],log_args["name"],log_args["buyer"],log_args["owner"],log_args["state"]
                                 )
-                            print(logs[i][j])
+                            logger.debug(logs[i][j])
                         elif logs[i][j]["event"] == "Balance":
                             db.insert_balanceinfo(
                                     log_args["user"],log_args["balance"]
                                 )
-                            print(logs[i][j]) 
+                            logger.debug(logs[i][j]) 
+        
+        print("{} finished normally".format(select))
 
-    except Exception:
-        logger.exception("main problem") 
+    except Exception as e:
+        logger.exception("what?")
+        print(e)
     
     db.db_commit()
     db.db_close()
-
 

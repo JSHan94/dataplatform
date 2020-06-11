@@ -21,6 +21,16 @@ Vue.use(VueRouter)
     component: () => import('../views/Product.vue')
   },
   {
+    path: '/ProductInfo/:id',
+    name: 'ProductInfo',
+    component: () => import('../views/ProductInfo.vue')
+  },
+  {
+    path: '/MyPage',
+    name: 'MyPage',
+    component: () => import('../views/MyPage.vue')
+  },
+  {
     path: '/Temp',
     name: 'Temp',
     component: () => import('../views/Temp.vue')

@@ -1,23 +1,34 @@
 <template>
-  <v-row justify="center">
-    <v-col cols = "12">
-      <v-tabs center-active fixed-tabs>
-        <v-tab v-for="item in datainfo" :key="item">{{item.category}}</v-tab>
-      </v-tabs>
-    </v-col>
-    <v-col v-for="item in datainfo" :key="item.iddatainfo" cols="auto">
-      <v-card max-width="400px">
-        <v-card-text>
-          <p class="display-1 text--primary"> {{item.name}} </p>
-          <div> price: {{item.price}} </div>
-          <p> time: {{item.time}} </p>
-        </v-card-text>
-        <v-card-actions>
-          <v-btn text>Buy</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-col>
-  </v-row>
+  <v-card>
+    <v-card-title>
+      <v-text-field
+        v-model="search"
+        label="Search"
+        single-line
+        hide-details
+      ></v-text-field>
+    </v-card-title>
+    <v-data-table
+      :headers="headers"
+      :items="datainfo"
+      :search="search"
+      @click:row="buy"
+    >
+      <template v-slot:item="row">
+        <tr>
+          <td>{{row.item.name}}</td>
+          <td>{{row.item.category}}</td>
+          <td>{{row.item.price}}</td>
+          <td>{{row.item.timestamp}}</td>
+          <td>
+            <v-btn @click="buy(row.item)">
+            buy
+            </v-btn>
+          </td>
+        </tr>
+      </template>
+    </v-data-table>
+  </v-card>
 </template>
 
 <script>
@@ -25,18 +36,39 @@ import axios from "axios"
 
 export default {
     data: () => ({
-        datainfo: []
+      search: '',
+      headers: [
+        { text: 'Name', align: 'start', value: 'name', width: "25%"},
+        { text: 'Category', align: 'start', value: 'category', width: "10%"},
+        { text: 'Price', align: 'start', value: 'price', width: "10%"},
+        { text: 'Time', align: 'start', value: 'time', width: "20%"},
+        { text: 'Purchase', align: 'start', value: 'time', width: "5%"},
+      ],
+      datainfo: [
+        {
+          name: "wrong",
+          category: "wrong",
+          price: "wrong",
+          timestamp: "wrong"
+        },
+      ]
     }),
     created() {
-        axios.get('http://localhost:3000/datainfo', {params: {'start': 0, 'end': 20}})
-        .then(res => {
-            this.datainfo = res.data.slice()
-        })
-        .catch( err => {
-            console.log('error to loading datainfo')
-        })
+      axios.get('http://141.223.82.142:3000/datainfo')
+      .then(res => {
+        this.datainfo = res.data.slice()
+      })
+      .catch(err => {
+        console.log(err)
+      })
     },
     methods: {
+      buy(item) {
+        let number = item.price
+        this.$store.state.productToBuy = item
+        let a = number.toString()  
+        this.$router.push({name: 'ProductInfo', params: {id: a}})
+      }
     }
 }
 </script>

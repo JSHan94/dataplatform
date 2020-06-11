@@ -1,5 +1,4 @@
 exports.sendTransaction = (req,res) =>{
-        console.log("called!")
         const buyer = "0x78658C9AaD8523BB283029C43135CF87339ADC21"
         const uploader = "0x7161a4eCE5dD841756ee38cBEa7da055F29302c9"
         
@@ -8,7 +7,7 @@ exports.sendTransaction = (req,res) =>{
         // http://localhost:3000/send?method=getFileInformation
   
         // buyFile - dataHash
-        // http://localhost:3000/send?method=buyFile&dataHash=123
+        // http://localhost:3000/send?method=buyFile&dataHash=dasgs
   
         // getToken  -  user, token
         // http://localhost:3000/send?method=getToken&user=0x78658C9AaD8523BB283029C43135CF87339ADC21&token=20
@@ -17,13 +16,13 @@ exports.sendTransaction = (req,res) =>{
         // http://localhost:3000/send?method=uploadFile&category=science&fileName=network&dataHash=123&price=10
   
         // saleConfirm - dataHash
-        // http://localhost:3000/send?method=saleConfirm - dataHash
+        // http://localhost:3000/send?method=saleConfirm&dataHash=sdagas
         
         // checkEvent - blocknum
         // http://localhost:3000/send?method=checkEvent
   
         // read url query 
-        var scriptName = "../python_script/Trading.py"
+        var scriptName = "./python_script/Trading.py"
         var query = [scriptName]
         for (var i in req.query){
             query.push(req.query[i])
@@ -44,15 +43,17 @@ exports.sendTransaction = (req,res) =>{
             //var obj = JSON.parse(origin.toString('utf-8'))
             
             var lines = origin.split(/\n/g)
-            console.log("event length : "+ lines.length)
-            try{
-                for (var i in lines){
-                    obj = JSON.parse(lines[i])
-                    console.log(obj)
-
-                }
-            }catch(error){
-                //console.log(error)
-            }
+            var data_str = data.toString()
+            //console.log("event length : "+ lines.length)
+            console.log(data_str)
+            // try{
+            //     for (var line in lines){
+            //         //obj = JSON.parse(lines[i])
+            //         //console.log(obj)
+            //         console.log(line)
+            //     }
+            // }catch(error){
+            //     //console.log(error)
+            // }
         })
 }

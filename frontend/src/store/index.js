@@ -19,10 +19,15 @@ export default new Vuex.Store({
         routerName: 'Product'
       },
       {
+        name: 'MyPage',
+        routerName: 'MyPage'
+      },
+      {
         name: 'Temp',
         routerName: 'Temp'
       }
     ],
+    productToBuy: null,
   },
   mutations: {
   },

@@ -4,9 +4,7 @@ contract TradingPlatform{
     
     // token
     mapping (address => uint256) public balanceOf;
-    event Buy(address _from,address _to, string _datah);
     event Balance(address user, uint balance);
-    event Upload(string category, string name, string datahash, uint price);
     event GetData(uint timestamp, string category, string name, string datah, uint price, STATE state, address owner, address buyer);
     
     // data plaform
@@ -34,8 +32,7 @@ contract TradingPlatform{
     }
     
     function upload(string memory _category, string memory _name, string memory _datahash, uint _price) public{
-        emit Upload(_category, _name, _datahash, _price);
-        
+
         newData.timestamp = now;
         newData.category = _category;
         newData.name = _name;
@@ -45,12 +42,16 @@ contract TradingPlatform{
         newData.owner = msg.sender;
         data_list[_datahash] = newData;
         
-        
+        Data memory data = data_list[_datahash];
+        emit GetData(data.timestamp, data.category, data.name, data.datahash, data.price, data.state, data.owner, data.buyer);
     }
     
     
     function buy(string memory _datahash) public payable {
-
+        //update data information
+        data_list[_datahash].buyer = msg.sender;
+        data_list[_datahash].state = STATE.PROCESSING;
+        
         Data memory data = data_list[_datahash];
         /*
         require(data_list[_datah].owner != address(0)); //check exist Data
@@ -62,12 +63,10 @@ contract TradingPlatform{
         
         balanceOf[msg.sender] -= data.price; // buyer pay money
         balanceOf[data.owner] += data.price; // owner get money 
-        emit Buy(data.owner,msg.sender,_datahash);
         
-        
-        //update data information
-        data_list[_datahash].buyer = msg.sender;
-        data_list[_datahash].state = STATE.PROCESSING;
+        emit Balance(msg.sender, balanceOf[msg.sender] );
+        emit Balance(data.owner, balanceOf[data.owner] );
+        emit GetData(data.timestamp, data.category, data.name, data.datahash, data.price, data.state, data.owner, data.buyer);
         
     }
     
@@ -78,15 +77,9 @@ contract TradingPlatform{
     
         data_list[_datahash].state = STATE.SOLDOUT;
         
-    }
-    
-    
-    function getData(string memory _datahash) public{
         Data memory data = data_list[_datahash];
         emit GetData(data.timestamp, data.category, data.name, data.datahash, data.price, data.state, data.owner, data.buyer);
     }
-    
-    
     
 }
 
