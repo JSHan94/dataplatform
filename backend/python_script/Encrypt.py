@@ -68,6 +68,7 @@ class Encrypt:
        
         # insert encrypt/capsule to db
         self.db.update_encrypt(ciphertext.hex(), capsule.to_bytes().hex(), cfrags[0].to_bytes().hex(), datahash)
+        print("encrypt finished well!")
         
         # receiver_keys = keys.UmbralPrivateKey.from_bytes(bytes.fromhex(self.get_key(receiver, ["privatekey"])[0][0]))
         # query = self.db.get_encrypt(datahash)

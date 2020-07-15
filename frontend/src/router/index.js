@@ -31,6 +31,11 @@ Vue.use(VueRouter)
     component: () => import('../views/MyPage.vue')
   },
   {
+    path: '/Userinfo',
+    name: 'Userinfo',
+    component: () => import('../views/Userinfo.vue')
+  },
+  {
     path: '/Temp',
     name: 'Temp',
     component: () => import('../views/Temp.vue')

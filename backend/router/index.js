@@ -8,6 +8,7 @@ router.get('/send', call.sendTransaction);
 
 router.get('/data', control.getData);
 router.get('/datainfo', control.getDataInfo);
+router.get('/userinfo', control.getUserInfo);
 router.get('/userbalance', control.getUserBalance);
 router.get('/userdatainfo', control.getUserDataInfo);
 

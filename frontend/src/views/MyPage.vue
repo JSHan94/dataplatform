@@ -1,49 +1,45 @@
 <template>
-  <v-col justify="center">
-    <v-card>
-      <v-card-title>
-        <div> {{user}} </div>
-        <div> {{balance}} </div>
-      </v-card-title>
-      <v-card-title>
-        <v-text-field
-          v-model="search"
-          label="Search"
-          single-line
-          hide-details
-        ></v-text-field>
-      </v-card-title>
+  <v-container>
+    <v-row justify="start">
+      <v-col md="7">
+        User: {{user}}
+      </v-col>
+    </v-row>
+    <v-row justify="start">
+      <v-col md="7">
+        Token: {{balance}}
+      </v-col>
+    </v-row>
+    <v-row justify="start">
+      <v-col md="1">
+        <v-btn block large color="primary" @click="getToken">
+          More Token
+        </v-btn>
+      </v-col>
+    </v-row>
+      <v-text-field
+        v-model="search"
+        label="Search"
+        single-line
+        hide-details
+      ></v-text-field>
       <v-data-table
         :headers="headers"
         :items="datainfo"
         :search="search"
-        @click:row="download"
       >
-        <template v-slot:item="row">
-          <tr>
-            <td>{{row.item.name}}</td>
-            <td>{{row.item.category}}</td>
-            <td>{{row.item.price}}</td>
-            <td>{{row.item.timestamp}}</td>
-            <td>
-              <v-btn @click="download(row.item)">
-              download
-              </v-btn>
-            </td>
-          </tr>
+        <template v-slot:item.download = "{item}">
+          <v-btn @click="download(item)">download</v-btn>
         </template>
       </v-data-table>
-    </v-card>
-    <v-card>
-      <v-col md="1">
-        <div class="my-1">
-          <v-btn large block @click="analysis">
-            analysis
-          </v-btn>
-        </div>
+    <v-row justify="center">
+      <v-col md="7">
+        <v-btn large block @click="analysis">
+          analysis
+        </v-btn>
       </v-col>
-    </v-card>
-  </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script>
@@ -58,8 +54,8 @@ export default {
       { text: 'Name', align: 'start', value: 'name', width: "25%"},
       { text: 'Category', align: 'start', value: 'category', width: "10%"},
       { text: 'Price', align: 'start', value: 'price', width: "10%"},
-      { text: 'Time', align: 'start', value: 'time', width: "20%"},
-      { text: 'Purchase', align: 'start', value: 'time', width: "5%"},
+      { text: 'Uploaded Time', align: 'start', value: 'timestamp', width: "20%"},
+      { text: 'Download', align: 'center', value: 'download', sortable: false, width: "10%"},
     ],
     datainfo: [
       {
@@ -85,6 +81,9 @@ export default {
       })
       .then(res => {
         this.datainfo = res.data.slice()
+        this.datainfo.map(temp => {
+          temp.timestamp = this.$moment(temp.timestamp).format("YYYY.MM.DD HH:mm:ss")
+        })
       })
       .catch(err => {
         console.log(err)
@@ -115,8 +114,17 @@ export default {
       })
     },
     analysis(){
-      window.location.href = "http://141.223.82.142:8080"
-    }
+      window.location.href = "http://localhost:8080"
+    },
+    getToken(){
+      axios.get('http://141.223.82.142:3000/send', {
+        params: {
+          method: 'getToken',
+          user: this.user,
+          token: 20
+        }
+      })
+    },
   }
 }
 </script>

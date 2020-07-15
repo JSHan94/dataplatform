@@ -14,7 +14,6 @@
             </v-btn>
         </v-toolbar-items>
     </v-toolbar>
-
 </template>
 
 <script>

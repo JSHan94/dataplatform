@@ -10,7 +10,7 @@ class Contract:
     def __init__(self,buyer, uploader,buyerKey,uploaderKey):
         #infura_url = "https://ropsten.infura.io/v3/5f5c1d6d2baf41509d5499dac0041758" 
         infura_url = "wss://ropsten.infura.io/ws/v3/5f5c1d6d2baf41509d5499dac0041758" 
-
+        #infura_url = "http://localhost:22000"
         self.contract_add = Info.contract
         self.buyer = Info.buyer
         self.uploader = Info.uploader

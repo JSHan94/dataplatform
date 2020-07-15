@@ -2,7 +2,7 @@
 
 cd ..
 
-source ../../../dpenv/bin/activate
+source ../../dpenv/bin/activate
 
 kill -9 `ps -ef | grep python | grep Trading.py| grep checkEvent | awk '{print $2}'`
 while true

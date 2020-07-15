@@ -26,17 +26,12 @@ if __name__ == "__main__":
     trading = Contract.Contract(buyer,uploader,buyerKey,uploaderKey)
     curBlock = int(trading.getBlock()["number"])  
 
-    # user = buyer
-    # encrypt.generate_key(user)
-    
-    # res = encrypt.get_key(user,["privatekey","publickey","signkey","verifykey"])[0]
-    # print(bytes.fromhex(res[0]))
-    
     try :
         select = sys.argv[1]
 
         if select == "getToken":
-            token = int(sys.argv[2])
+            user = sys.argv[2]
+            token = int(sys.argv[3])
             trading.getToken(token)
 
             logger.debug({'event':"getToken", 'token': token})
@@ -50,22 +45,23 @@ if __name__ == "__main__":
             
             # data encryption with Encrypt.py
             # actually.. it should be in buyFile method..
-            time_out = 100 
+            time_out = 20 
             while time_out >0 :
-                res = db.get_dbhash()
+                res = db.get_dbhash()             
                 if len(res) != 0:
                     db.update_dbhash(datahash)
                     break 
                 time.sleep(5)
                 time_out -= 5
                 db.db_commit()
-                print("checking db newdata ... time out : {}, res : {}".format(time_out,res))
+                print("checking db newdata ... time out : {}, res : {}".format(time_out))
             
             proxy = Encrypt.Encrypt(db)
             proxy.encrypt(uploader,buyer,datahash)
-
+            
             # Smart Contract call
             trading.uploadFile(category,filename,datahash,price)
+
             
             print({'event': "uploadFile", 'category':category, 'filename' : filename, 'datahash':datahash,'price':price})
         
@@ -111,7 +107,7 @@ if __name__ == "__main__":
 
     except Exception as e:
         logger.exception("what?")
-        print(e)
+        print("error! ",e)
     
     db.db_commit()
     db.db_close()

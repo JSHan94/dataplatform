@@ -3,7 +3,7 @@ var dbConfig = require('../config/database.js');
 var con = mysql.createConnection(dbConfig);
 
 exports.getData = (req,res) => {
-  let datahash = req.body.datahash;
+  let datahash = req.query.datahash;
   con.query('SELECT * from db WHERE datahash = "' + datahash + '"', function(err, respond) {
     if (err){
       throw err;
@@ -18,7 +18,16 @@ exports.getData = (req,res) => {
 };
 
 exports.getDataInfo = (req,res) => {
-  con.query('SELECT * from datainfo', function(err, rows) {
+  con.query('SELECT * from datainfo WHERE state = 0', function(err, rows) {
+    if (err){
+      throw err;
+    }
+    res.send(rows);
+  });
+};
+
+exports.getUserInfo = (req,res) => {
+  con.query('SELECT * from balanceinfo', function(err, rows) {
     if (err){
       throw err;
     }
@@ -32,7 +41,10 @@ exports.getUserBalance = (req,res) => {
     if (err){
       throw err;
     }
-    res.send(respond[0].balance.toString());
+    if(respond[0]==undefined)
+      res.send('0')
+    else
+      res.send(respond[0].balance.toString());
   });
 };
 

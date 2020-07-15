@@ -23,6 +23,10 @@ export default new Vuex.Store({
         routerName: 'MyPage'
       },
       {
+        name: 'Userinfo',
+        routerName: 'Userinfo'
+      },
+      {
         name: 'Temp',
         routerName: 'Temp'
       }
